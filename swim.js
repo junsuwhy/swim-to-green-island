@@ -122,7 +122,10 @@ $(document).ready(function() {
      		$('#curr_targ_dist').html(String(last_dist));
      		
 
+   		data_visualize(data);
    		}; 
+
+
    	};
 });
 

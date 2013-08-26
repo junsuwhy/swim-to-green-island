@@ -75,3 +75,7 @@ a{
 a:hover {
 	background-color:#111180;
 }
+
+#graph text{
+	color:#7B90D2;
+}
