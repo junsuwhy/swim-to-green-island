@@ -31,7 +31,9 @@ data_visualize=function(data){
 				
 				timeFrom:date.getTime(),
 				timeTo:nextSeasonDate.getTime(),
-				name:ad(date.getYear())+"年 第"+Math.floor((date.getMonth()+3)/3)+"季",
+				strYear:ad(date.getYear())+"年",
+				strSeason:"第"+Math.floor((date.getMonth()+3)/3)+"季",
+				name:function(){return this.strYear+this.strSeason},
 				totalDist:0,
 				totalCount:0
 			}
@@ -57,7 +59,7 @@ data_visualize=function(data){
 
 	//設定全域變數
 	width=800;
-	height=480;
+	height=300;
 	padding=70;
 	filler="2:1";
 	arrFil=[];
@@ -124,7 +126,7 @@ data_visualize=function(data){
 			.attr('fill','#A5DEE4');
 
 		//加入tag的字
-		$g1data.append('text').text(function(d,i){return d.name})
+		$g1data.append('text').text(function(d,i){return d.name()})
 			.attr('x',function(d,i){
 				return padding+i*unitWidth(arr)-(1.5)*rectWidth(arr);
 			})
@@ -134,7 +136,7 @@ data_visualize=function(data){
 			.attr('color','#7B90D2');
 
 		//加入value的字
-		$g1data.append('text').text(function(d,i){return d.totalDist})
+		$g1data.append('text').text(function(d,i){return d.totalDist+"公尺"})
 			//.attr('x',function(d,i){
 			//	return padding+i*xlength/arr.length-2*5;
 			//})
