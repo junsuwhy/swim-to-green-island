@@ -50,19 +50,36 @@ body {
 	padding:5px 5px 5px 5px;
 }
 .date{
-	width: 28%;
+	width: 200px;
 	float:left;
 }
 .one_dist{
-	width:16%;
+	padding-right:4em;
+	min-width:100px;
 	float:left;
+	text-align:right;
+}
+.total_tag{
+	width:2.5em;
+	float: left;
 }
 .total_dist{
-	width:28%;
-	float:left;
+	width:4em;
+	padding-right:4em;
+	float: left;
+	text-align:right;
+}
+.last_tag{
+	width:2.5em;
+	float: left;	
 }
 .last_dist{
-	width:28%;
+	width:4em;
+	float: left;
+	text-align:right;
+}
+.archive_text{
+	width:200px;
 	float:left;
 }
 
@@ -77,5 +94,6 @@ a:hover {
 }
 
 #graph text{
-	color:#7B90D2;
+	fill:#A5DEE4;
+	font-size:12px;
 }

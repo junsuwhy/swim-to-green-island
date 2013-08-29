@@ -23,7 +23,7 @@ $(document).ready(function() {
 		if(xmlhttp.readyState==4){
 			xmlDoc=xmlhttp.responseText;
 			//var data = $.csv.toArray(xmlDoc);
-			var data=xmlDoc.split(/\n/);
+			var dataRaw=xmlDoc.split(/\n/);
 
 			var total_dist=0;
 			//加總的距離
@@ -38,29 +38,45 @@ $(document).ready(function() {
 
 			var is_next_target=false;
 
+			var statArray=[];
+			var statCurr={
+				//記得要補充
+				timeFrom:null,  //2013/8/1 timestamp
+				timeTo:null,	//2013/9/1  timestamp
+				timeTag:null,   //"2013,8月"
+				duraDist:null,
+				totalDist:null,
+				archiveTarget:null
+			}
+			statArray.push(statCurr);
+
 			
 	    	var jq_history=$('#history');
 	    	jq_history.children().filter('.his_target').remove();
 
 	    	while(true){
 
-	    		var jq_his_target=$('<div></div>').addClass('his_target');
+	    		var jq_his_target=$('<div>').addClass('his_target');
 	    		jq_history.append(jq_his_target);
-	    		var jq_targ_title=$('<div></div>').addClass('targ_title');
+	    		var jq_targ_title=$('<div>').addClass('targ_title');
 	    		jq_his_target.append(jq_targ_title);
-	    		console.log(level);
+	    		//console.log(level);
 	    		jq_targ_title.append('游向'+target[level].to+' 共計'+target[level].dist+'m ');
 
-	    		if(data_idx>=data.length)break;
+	    		if(data_idx>=dataRaw.length)break;
 
 	    		var last_dist=target[level]["dist"];
 	    		//以下為有資料時的情況
 
 	    		while(true){
+	    			//statArray,statCurr這裡要用到了
+	    			//整理之後最後丟到data_visualize
+
+
 	    			//資料處理
-	    			obj=data[data_idx].split(',');
+	    			obj=dataRaw[data_idx].split(',');
 	    			//總距離
-	    			console.log('total_dist:',total_dist);
+	    			//console.log('total_dist:',total_dist);
 					total_dist+=parseInt(obj[1]);
 					//剩餘距離
 		    		last_dist=target[level].dist-total_dist;
@@ -70,13 +86,14 @@ $(document).ready(function() {
 	    			jq_div_hist_list.addClass('hist_list');
 		    		jq_his_target.append(jq_div_hist_list);
 
-		    		var list_date=$('<div></div>').addClass('date').append(obj[0]+' ');
+		    		var list_date=$('<span>').addClass('date').append(obj[0]+' ');
 					jq_div_hist_list.append(list_date);
-		    		var list_one_dist=$('<div></div>').addClass('one_dist').append(obj[1]+'m ');
+		    		var list_one_dist=$('<span>').addClass('one_dist').append(obj[1]+'m ');
 		    		jq_div_hist_list.append(list_one_dist);
-		    		var list_total_dist=$('<div></div>').addClass('total_dist').append('總計'+total_dist+'m ');
+		    		jq_div_hist_list.append($("<span>").addClass("total_tag").append("總計"));
+		    		var list_total_dist=$('<span>').addClass('total_dist').append(total_dist+'m ');
 		    		jq_div_hist_list.append(list_total_dist);
-		    		var list_last_dist=$('<div></div>').addClass('last_dist');
+		    		var list_last_dist=$('<span>').addClass('archive_text');
 		    		jq_div_hist_list.append(list_last_dist);
 
 		    		if(last_dist<=0){
@@ -84,13 +101,14 @@ $(document).ready(function() {
 	    				list_last_dist.append('到達'+target[level].to);
 	    				level++;
 	    				data_idx++;
-		    			if(data_idx>=data.length){
+		    			if(data_idx>=dataRaw.length){
 		    				end=true;
 		    			};
 
 		    			break;
 		    		}else{
-		    			list_last_dist.append('剩餘'+last_dist+'m ');
+		    			list_last_dist.append('<span class="last_tag">剩餘</span>');
+		    			list_last_dist.append('<span class="last_dist">'+last_dist+'m </span>');
 		    		};
 
 		    		jq_div_hist_list=null;
@@ -100,7 +118,7 @@ $(document).ready(function() {
 		    		list_last_dist=null;
 
 		    		data_idx++;
-		    		if(data_idx>=data.length){
+		    		if(data_idx>=dataRaw.length){
 		    			end=true;
 		    			break;
 		    		};
@@ -122,7 +140,7 @@ $(document).ready(function() {
      		$('#curr_targ_dist').html(String(last_dist));
      		
 
-   		data_visualize(data);
+   		data_visualize(dataRaw);
    		}; 
 
 

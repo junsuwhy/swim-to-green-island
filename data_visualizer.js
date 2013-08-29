@@ -90,8 +90,8 @@ data_visualize=function(data){
 
 	main=function(){
 
-		//初使化
-		$("#graph").append('<svg>');
+		//初始化
+		$("#graph").append('<svg>').hide().show('slow');
 		$svg=d3.select('#graph svg');
 		$svg.attr('width',width).attr('height',height);
 		$g1=$svg.append("g").attr('id','group1').selectAll('#group1');
@@ -115,6 +115,7 @@ data_visualize=function(data){
 				return rectWidth(arr)
 			})
 			.attr("height",0)
+			.attr('fill','#A5DEE4')
 			.transition()
 			.duration(3000)
 			.attr('y',function(d,i){
@@ -122,18 +123,17 @@ data_visualize=function(data){
 			})
 			.attr('height',function(d,i){
 				return (d.totalDist)*ylength/arrMax(arr)
-			})
-			.attr('fill','#A5DEE4');
+			});
 
 		//加入tag的字
 		$g1data.append('text').text(function(d,i){return d.name()})
 			.attr('x',function(d,i){
 				return padding+i*unitWidth(arr)-(1.5)*rectWidth(arr);
 			})
+			.attr('color','#7B90D2')
 			.attr('y',function(d,i){
 				return height-padding+em;
-			})
-			.attr('color','#7B90D2');
+			});
 
 		//加入value的字
 		$g1data.append('text').text(function(d,i){return d.totalDist+"公尺"})
@@ -143,6 +143,17 @@ data_visualize=function(data){
 			//.attr('y',function(d,i){
 			//	return height-padding-d*ylength/arrMax(arr);
 			//})
+			.attr('transform',function(d,i){
+				str="";
+				str+='translate(';
+				str+=(padding+i*unitWidth(arr));
+				str+=',';
+				str+=(height-padding)-em;
+				str+=')';
+				str+='rotate(-90)';
+				return str;
+			})
+			.transition().duration(3000)
 			.attr('transform',function(d,i){
 				str="";
 				str+='translate(';
