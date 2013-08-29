@@ -13,7 +13,23 @@ var target=[{
 	}
 ];
 
+var statArray=null;
+getStatObjFromDate=function(strDate){
+	timestamp=(new Date(strDate)).getTime()
+	for (var i = 0; i < statArray.length; i++) {
+		if(timestamp>=statArray[i].timeFrom&&timestamp<statArray[i].timeTo)
+			return statArray[i]
+	};
+	return null
+}
+/*
+$(document).ready(function() {
+	d3.csv("http://junsuwhy.github.io/swim-to-green-island/data.csv",function(){
+		console.log("yo");
+	})
+});
 
+*/
 $(document).ready(function() {
 	xmlhttp=new XMLHttpRequest();
 	xmlhttp.open("GET","data.csv",true);
@@ -38,19 +54,27 @@ $(document).ready(function() {
 
 			var is_next_target=false;
 
-			var statArray=[];
-			var statCurr={
-				//記得要補充
-				timeFrom:null,  //2013/8/1 timestamp
-				timeTo:null,	//2013/9/1  timestamp
-				timeTag:null,   //"2013,8月"
-				duraDist:null,
-				totalDist:null,
-				archiveTarget:null
-			}
-			statArray.push(statCurr);
+			statArray=[];
+			today=new Date();
+			var CountTimeFrom=(new Date(dataRaw[1].split(",")[0])).getTime();
+			do{
+				day=new Date(CountTimeFrom);
+				var statCurr={
+					timeFrom:CountTimeFrom,  //2013/8/1 timestamp
+					timeTo:nextMonthFirstDay(CountTimeFrom).getTime(),	//2013/9/1  timestamp
+					timeTag:ad(day.getYear())+"年"+(day.getMonth()+1)+"月",   //"2013,8月"
+					lastDist:0,     //這個月加進去之前總合的距離
+					duraDist:0,		//這個月共游多少距離
+					totalDist:0,	//算到這個月完總計多少
+					archiveTarget:[]//如果這個月有達成目標的話, 是什麼?
+				}	
+				statArray.push(statCurr);
+				CountTimeFrom=statCurr.timeTo;
 
-			
+			}while(statCurr.timeTo<today.getTime());
+			//console.log(statArray);
+		
+
 	    	var jq_history=$('#history');
 	    	jq_history.children().filter('.his_target').remove();
 
@@ -81,6 +105,8 @@ $(document).ready(function() {
 					//剩餘距離
 		    		last_dist=target[level].dist-total_dist;
 
+		    		statObj=getStatObjFromDate(obj[0]);
+		    		statObj.duraDist+=parseInt(obj[1]);
 
 	    			var jq_div_hist_list=$('<div></div>');
 	    			jq_div_hist_list.addClass('hist_list');
@@ -99,11 +125,14 @@ $(document).ready(function() {
 		    		if(last_dist<=0){
 	    				is_next_target=true;
 	    				list_last_dist.append('到達'+target[level].to);
+	    				statObj.archiveTarget.push(level);
+
 	    				level++;
 	    				data_idx++;
 		    			if(data_idx>=dataRaw.length){
 		    				end=true;
 		    			};
+
 
 		    			break;
 		    		}else{
@@ -134,17 +163,22 @@ $(document).ready(function() {
 
     		};
 
+    		statArray[0].totalDist+=statArray[0].duraDist;
+			for (var i = 1; i < statArray.length; i++) {
+					statObj=statArray[i];
+					statObj.lastDist=statArray[i-1].totalDist
+					statObj.totalDist=statObj.duraDist+statObj.lastDist;
+				};
 
      		$('#curr_target').html(target[level].to);
      		last_dist=target[level].dist-total_dist;
      		$('#curr_targ_dist').html(String(last_dist));
      		
 
-   		data_visualize(dataRaw);
+   			data_visualize(statArray);
    		}; 
 
 
    	};
 });
-
 

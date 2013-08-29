@@ -97,3 +97,8 @@ a:hover {
 	fill:#A5DEE4;
 	font-size:12px;
 }
+
+#graph polyline,#graph line{
+	fill:none;
+	stroke:#A5DEE4;
+}

@@ -1,11 +1,129 @@
+
+
 arrStat=[];
+var $g1=null;
+$xscale=null;
+$yscale=null;
 
 data_visualize=function(data){
 
-	console.log(data);
+	//console.log(data);
+	arrStat=data;
+
+	
+
+	padding={
+		top:20,
+		left:80,
+		buttom:80,
+		right:80
+	};
+	width=720;
+	height=400;
+
+	$xscale=d3.scale.ordinal()
+		.domain(d3.range(arrStat.length))
+		.rangePoints([padding.left,width-padding.right]);
+
+	$yscale=d3.scale.linear()
+		.domain([0,arrStat[arrStat.length-1].totalDist])
+		.range([height-padding.buttom,padding.top]);
+
+	/*
+	str=$xscale(0)+","+$yscale(0);
+	for (var i = 0; i < arrStat.length; i++) {
+		str+=" "+$xscale(i)+","+$yscale(arrStat[i].totalDist);
+	};
+	*/
+
+	$("#graph").append('<svg>');
+	$svg=d3.select('#graph svg');
+	$svg.attr('width',width).attr('height',height);
+	$g1=$svg.append("g").attr('id','group1').selectAll('#group1');
+
+	//畫軸
+	d3.selectAll('#group1').append('line')
+	.attr('x1',$xscale(0))
+	.attr('y1',$yscale(0))
+	.attr('x2',$xscale(arrStat.length-1))
+	.attr('y2',$yscale(0));
+
+	d3.selectAll('#group1').append('line')
+	.attr('x1',$xscale(0))
+	.attr('y1',$yscale(0))
+	.attr('x2',$xscale(0))
+	.attr('y2',$yscale(arrStat[arrStat.length-1].totalDist));
 
 
-	//arrStat=[];
+	//畫圖表的折線
+	$svg.selectAll('#group1').data(arrStat).enter()
+	.append('line')
+	.attr('id',function(d,i){return 'line'+d.timeFrom})
+	.attr('x1',function(d,i){return $xscale(i-1)})
+	.attr('y1',function(d,i){return $yscale(d.lastDist)})
+	.attr('x2',function(d,i){return $xscale(i)})
+	.attr('y2',function(d,i){return $yscale(d.totalDist)});
+
+	//畫達成目標的線
+	for (var i = 0; i < arrStat.length; i++) {
+		arcTar=arrStat[i].archiveTarget;
+		if(arcTar.length>=1){
+			for (var j = 0; j < arcTar.length; j++) {
+				d3.selectAll('#group1').append('line')
+				.attr('x1',$xscale(0))
+				.attr('y1',$yscale(target[arcTar[j]]["dist"]))
+				.attr('x2',$xscale(i-1)+($xscale(1)-$xscale(0))
+					*($yscale(target[arcTar[j]]["dist"])-$yscale(arrStat[i].lastDist))
+					/($yscale(arrStat[i].totalDist)-$yscale(arrStat[i].lastDist)))//
+				.attr('y2',$yscale(target[arcTar[j]]["dist"]))
+				.style('stroke-opacity',0.2);
+				
+				d3.selectAll('#group1').append('text').text(target[arcTar[j]]["to"])
+				.attr('x',padding.left-14*target[arcTar[j]]["to"].length)
+				.attr('y',$yscale(target[arcTar[j]]["dist"]));
+			};
+		};
+	};
+
+	//畫日期的線
+
+	firstYear=parseInt(arrStat[0]['timeTag'].substr(0,4));
+	currYear=parseInt(ad((new Date()).getYear()));
+
+	console.log(firstYear);
+	console.log(currYear);
+	for (var i = 1; i <= currYear-firstYear; i++) {
+		statObj=getStatObjFromDate((firstYear+i)+'/1/1');
+		d3.selectAll('#group1').append('text')
+		.text(statObj.timeTag.substr(0,5))
+		.attr('transform','translate('
+			+$xscale(arrStat.indexOf(statObj))
+			+","
+			+$yscale(0)
+			+")rotate(45)");
+
+		d3.selectAll('#group1').append('line')
+		.attr('x1',$xscale(arrStat.indexOf(statObj)))
+		.attr('y1',$yscale(0))
+		.attr('x2',$xscale(arrStat.indexOf(statObj)))
+		.attr('y2',$yscale(statObj.lastDist))
+		.style('stroke-opacity',0.2);
+
+		
+	};
+	
+
+
+
+	/*
+	d3.selectAll('#group1').append('polyline')
+	.attr('points',str)
+	.attr('id','totalDist');
+	*/
+
+
+
+/*
 	for (var i = 1; i < data.length; i++) {
 		arrData=data[i].split(",");
 
@@ -46,15 +164,6 @@ data_visualize=function(data){
 
 
 	};
-	for (var i = 0; i < arrStat.length; i++) {
-		console.log(arrStat[i].name);
-		console.log("游了"+arrStat[i].totalCount+"次");
-		console.log("游了"+arrStat[i].totalDist+"公尺");
-	};
-
-
-
-
 
 
 	//設定全域變數
@@ -169,5 +278,6 @@ data_visualize=function(data){
 	};
 
 	main();
+	*/
 
 }
