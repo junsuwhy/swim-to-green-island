@@ -99,29 +99,34 @@ $(document).ready(function() {
 
 	    			//資料處理
 	    			obj=dataRaw[data_idx].split(',');
-	    			//總距離
-	    			//console.log('total_dist:',total_dist);
-					total_dist+=parseInt(obj[1]);
-					//剩餘距離
-		    		last_dist=target[level].dist-total_dist;
 
-		    		statObj=getStatObjFromDate(obj[0]);
-		    		statObj.duraDist+=parseInt(obj[1]);
+	    			if(obj[0]){
+		    			//總距離
+		    			//console.log('total_dist:',total_dist);
+						total_dist+=parseInt(obj[1]);
+						//剩餘距離
+			    		last_dist=target[level].dist-total_dist;
 
-	    			var jq_div_hist_list=$('<div></div>');
-	    			jq_div_hist_list.addClass('hist_list');
-		    		jq_his_target.append(jq_div_hist_list);
+			    		statObj=getStatObjFromDate(obj[0]);
+			    		statObj.duraDist+=parseInt(obj[1]);
 
-		    		var list_date=$('<span>').addClass('date').append(obj[0]+' ');
-					jq_div_hist_list.append(list_date);
-		    		var list_one_dist=$('<span>').addClass('one_dist').append(obj[1]+'m ');
-		    		jq_div_hist_list.append(list_one_dist);
-		    		jq_div_hist_list.append($("<span>").addClass("total_tag").append("總計"));
-		    		var list_total_dist=$('<span>').addClass('total_dist').append(total_dist+'m ');
-		    		jq_div_hist_list.append(list_total_dist);
-		    		var list_last_dist=$('<span>').addClass('archive_text');
-		    		jq_div_hist_list.append(list_last_dist);
+		    			var jq_div_hist_list=$('<div></div>');
+		    			jq_div_hist_list.addClass('hist_list');
+			    		jq_his_target.append(jq_div_hist_list);
 
+			    		var list_date=$('<span>').addClass('date').append(obj[0]+' ');
+						jq_div_hist_list.append(list_date);
+			    		var list_one_dist=$('<span>').addClass('one_dist').append(obj[1]+'m ');
+			    		jq_div_hist_list.append(list_one_dist);
+			    		jq_div_hist_list.append($("<span>").addClass("total_tag").append("總計"));
+			    		var list_total_dist=$('<span>').addClass('total_dist').append(total_dist+'m ');
+			    		jq_div_hist_list.append(list_total_dist);
+			    		var list_last_dist=$('<span>').addClass('archive_text');
+			    		jq_div_hist_list.append(list_last_dist);
+
+
+	    			}
+	    			
 		    		if(last_dist<=0){
 	    				is_next_target=true;
 	    				list_last_dist.append('到達'+target[level].to);
@@ -136,8 +141,10 @@ $(document).ready(function() {
 
 		    			break;
 		    		}else{
-		    			list_last_dist.append('<span class="last_tag">剩餘</span>');
-		    			list_last_dist.append('<span class="last_dist">'+last_dist+'m </span>');
+		    			if(list_last_dist){
+			    			list_last_dist.append('<span class="last_tag">剩餘</span>');
+			    			list_last_dist.append('<span class="last_dist">'+last_dist+'m </span>');
+		    			}
 		    		};
 
 		    		jq_div_hist_list=null;
@@ -151,14 +158,13 @@ $(document).ready(function() {
 		    			end=true;
 		    			break;
 		    		};
-	    			
 	    		};
 
 
 	    		jq_history.append('<div class="clear"></div>')
 	    		if(end){
 	    			break;
-	    		}
+	    		};
 
 
     		};
